@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: technocolabs-delivery-ai
+    env: docker
+    plan: starter
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9
+      - key: PORT
+        value: 5000
+    buildCommand: docker build -t technocolabs-delivery-ai .
+    startCommand: docker run -p $PORT:5000 technocolabs-delivery-ai

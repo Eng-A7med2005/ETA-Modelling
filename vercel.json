@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/simple_index.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/predict",
+      "dest": "/api/simple_index.py"
+    },
+    {
+      "src": "/health",
+      "dest": "/api/simple_index.py"
+    },
+    {
+      "src": "/info",
+      "dest": "/api/simple_index.py"
+    },
+    {
+      "src": "/test",
+      "dest": "/api/simple_index.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/simple_index.py"
+    }
+  ]
+}

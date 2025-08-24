@@ -41,18 +41,47 @@ def load_model_components():
 
         # Try multiple possible paths for model files
         possible_paths = [
-            current_dir,  # api/ directory
+            os.path.join(parent_dir, "models"),  # models/ subdirectory (first priority)
             parent_dir,  # root directory
-            os.path.join(parent_dir, "models"),  # models/ subdirectory
+            current_dir,  # api/ directory
+            "/app/models",  # Docker models path
+            "/app",  # Docker root path
         ]
 
         model_loaded = False
         for base_path in possible_paths:
             try:
+                print(f"🔍 Checking path: {base_path}")
+
+                # List directory contents for debugging
+                if os.path.exists(base_path):
+                    try:
+                        files = os.listdir(base_path)
+                        print(f"   📂 Contents: {files}")
+                    except:
+                        print(f"   📂 Cannot list contents")
+                else:
+                    print(f"   ❌ Path does not exist")
+                    continue
+
                 model_path = os.path.join(base_path, "best_model.pkl")
                 scaler_path = os.path.join(base_path, "scaler.pkl")
                 feature_path = os.path.join(base_path, "feature_columns.pkl")
                 encoder_path = os.path.join(base_path, "label_encoders.pkl")
+
+                print(f"   🔍 Looking for:")
+                print(
+                    f"      - {model_path} {'✅' if os.path.exists(model_path) else '❌'}"
+                )
+                print(
+                    f"      - {scaler_path} {'✅' if os.path.exists(scaler_path) else '❌'}"
+                )
+                print(
+                    f"      - {feature_path} {'✅' if os.path.exists(feature_path) else '❌'}"
+                )
+                print(
+                    f"      - {encoder_path} {'✅' if os.path.exists(encoder_path) else '❌'}"
+                )
 
                 if (
                     os.path.exists(model_path)
@@ -61,12 +90,15 @@ def load_model_components():
                     and os.path.exists(encoder_path)
                 ):
 
-                    print(f"📁 Loading from: {base_path}")
+                    print(f"📁 ✅ Loading REAL MODEL from: {base_path}")
                     model = joblib.load(model_path)
                     scaler = joblib.load(scaler_path)
                     feature_columns = joblib.load(feature_path)
                     label_encoders = joblib.load(encoder_path)
                     model_loaded = True
+                    print(
+                        f"🎯 Real model loaded successfully! Type: {type(model).__name__}"
+                    )
                     break
 
             except Exception as e:
@@ -74,22 +106,23 @@ def load_model_components():
                 continue
 
         if not model_loaded:
-            # Create dummy model for testing if files don't exist
-            print("⚠️ Model files not found. Creating dummy model for testing...")
-            from sklearn.ensemble import RandomForestRegressor
-
-            model = RandomForestRegressor(n_estimators=10, random_state=42)
-            model.fit([[0] * 67], [2.0])  # Dummy training
-
-            from sklearn.preprocessing import StandardScaler
-
-            scaler = StandardScaler()
-            scaler.fit([[0] * 67])
-
-            feature_columns = [f"feature_{i}" for i in range(67)]
+            print("❌ CRITICAL ERROR: Real ML model files not found!")
+            print("📂 Checked paths:")
+            for path in possible_paths:
+                print(f"   - {path}")
+            print("📋 Required files:")
+            print("   - best_model.pkl")
+            print("   - scaler.pkl")
+            print("   - feature_columns.pkl")
+            print("   - label_encoders.pkl")
+            print(
+                "⚠️ Application will start but predictions will fail until model is loaded"
+            )
+            # Don't raise exception, just set model to None
+            model = None
+            scaler = None
+            feature_columns = []
             label_encoders = {}
-
-            print("✅ Dummy model created for testing")
 
         print("✅ All model components loaded successfully!")
         print(f"📊 Model uses {len(feature_columns)} features")
@@ -404,7 +437,10 @@ def create_comprehensive_features_for_prediction(
                     features[col] = 0  # Default for other features
 
         # Create feature array in correct order
-        feature_array = np.array([[features[col] for col in feature_columns]])
+        if len(feature_columns) == 3:  # Mathematical model
+            feature_array = np.array([[distance_km, pickup_hour, is_weekend]])
+        else:  # Full ML model
+            feature_array = np.array([[features[col] for col in feature_columns]])
 
         return feature_array, distance_km
 
@@ -1408,12 +1444,8 @@ def test():
 
 # Load model components when module is imported (for Vercel)
 print("🚀 Initializing TechnoColabs Delivery AI...")
-try:
-    load_model_components()
-    print("✅ TechnoColabs AI initialized successfully!")
-except Exception as e:
-    print(f"⚠️ Warning during initialization: {e}")
-    print("🔄 Will retry on first request...")
+load_model_components()
+print("✅ TechnoColabs AI initialized successfully!")
 
 if __name__ == "__main__":
     print("🚀 Starting TechnoColabs Delivery AI Server...")

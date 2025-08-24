@@ -17,7 +17,10 @@ COPY requirements.txt .
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy all files
+# Copy model files (ensure they're included)
+COPY models/ ./models/
+
+# Copy all other files
 COPY . .
 
 # Create non-root user

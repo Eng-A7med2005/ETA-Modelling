@@ -564,12 +564,16 @@ def home():
                 margin: 25px 0;
                 backdrop-filter: blur(10px);
                 border: 1px solid rgba(255,255,255,0.2);
+                max-width: 100%;
+                overflow: hidden;
             }
             
             .stats-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
                 gap: 20px;
+                max-width: 100%;
+                overflow: hidden;
             }
             
             .stat-item {
@@ -897,6 +901,59 @@ def home():
                 
                 .stats-grid {
                     grid-template-columns: repeat(2, 1fr);
+                    gap: 15px;
+                }
+                
+                .stats {
+                    padding: 20px;
+                    margin: 20px 0;
+                }
+                
+                .stat-item {
+                    padding: 15px;
+                }
+                
+                .stat-item h3 {
+                    font-size: 1.8em;
+                }
+                
+                .stat-item p {
+                    font-size: 1em;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .stats-grid {
+                    grid-template-columns: 1fr;
+                    gap: 12px;
+                }
+                
+                .header {
+                    padding: 30px 20px;
+                }
+                
+                .header h1 {
+                    font-size: 1.8em;
+                }
+                
+                .header p {
+                    font-size: 1.1em;
+                }
+                
+                .stats {
+                    padding: 15px;
+                }
+                
+                .stat-item {
+                    padding: 12px;
+                }
+                
+                .stat-item h3 {
+                    font-size: 1.6em;
+                }
+                
+                .form-container {
+                    padding: 20px 15px;
                 }
             }
         </style>

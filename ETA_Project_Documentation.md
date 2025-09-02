@@ -1068,10 +1068,6 @@ services:
 
 **Project Completion Date**: September 2024  
 **Total Development Time**: 8 weeks  
-**Team Size**: 4 data scientists, 2 domain experts  
-**Lines of Code**: 2,500+  
-**Documentation Pages**: 45+
-
----
-
-_This report represents the comprehensive documentation of the Last Miles Delivery Machine Learning project, providing detailed insights into methodologies, results, and recommendations for future development._
+**Team Size**: 4 data scientists
+**Lines of Code**: 1,500+  
+**Documentation Pages**: 20+
